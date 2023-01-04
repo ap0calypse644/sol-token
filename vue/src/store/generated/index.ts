@@ -1,8 +1,10 @@
 // THIS FILE IS GENERATED AUTOMATICALLY. DO NOT MODIFY.
 
+import SoltFreezer from './solt.freezer'
 
 
 export default { 
+  SoltFreezer: load(SoltFreezer, 'solt.freezer'),
   
 }
 
