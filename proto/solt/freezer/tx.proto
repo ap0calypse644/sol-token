@@ -2,12 +2,43 @@ syntax = "proto3";
 package solt.freezer;
 
 // this line is used by starport scaffolding # proto/tx/import
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "solt/x/freezer/types";
 
 // Msg defines the Msg service.
 service Msg {
-    // this line is used by starport scaffolding # proto/tx/rpc
+      rpc MintTokens(MsgMintTokens) returns (MsgMintTokensResponse);
+  rpc FreezeTokens(MsgFreezeTokens) returns (MsgFreezeTokensResponse);
+  rpc UnfreezeTokens(MsgUnfreezeTokens) returns (MsgUnfreezeTokensResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgMintTokens {
+  string creator = 1;
+  repeated cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false];
+}
+
+message MsgMintTokensResponse {
+}
+
+message MsgFreezeTokens {
+  string creator = 1;
+  string owner = 2;
+  repeated cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgFreezeTokensResponse {
+}
+
+message MsgUnfreezeTokens {
+  string creator = 1;
+  string owner = 2;
+  repeated cosmos.base.v1beta1.Coin amount = 3 [(gogoproto.nullable) = false];
+}
+
+message MsgUnfreezeTokensResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

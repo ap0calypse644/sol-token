@@ -24,7 +24,19 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgMintTokens = "op_weight_msg_mint_tokens"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgMintTokens int = 100
+
+	opWeightMsgFreezeTokens = "op_weight_msg_freeze_tokens"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgFreezeTokens int = 100
+
+	opWeightMsgUnfreezeTokens = "op_weight_msg_unfreeze_tokens"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUnfreezeTokens int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -61,6 +73,39 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgMintTokens int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgMintTokens, &weightMsgMintTokens, nil,
+		func(_ *rand.Rand) {
+			weightMsgMintTokens = defaultWeightMsgMintTokens
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgMintTokens,
+		freezersimulation.SimulateMsgMintTokens(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgFreezeTokens int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgFreezeTokens, &weightMsgFreezeTokens, nil,
+		func(_ *rand.Rand) {
+			weightMsgFreezeTokens = defaultWeightMsgFreezeTokens
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgFreezeTokens,
+		freezersimulation.SimulateMsgFreezeTokens(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUnfreezeTokens int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUnfreezeTokens, &weightMsgUnfreezeTokens, nil,
+		func(_ *rand.Rand) {
+			weightMsgUnfreezeTokens = defaultWeightMsgUnfreezeTokens
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUnfreezeTokens,
+		freezersimulation.SimulateMsgUnfreezeTokens(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

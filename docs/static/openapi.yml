@@ -74275,6 +74275,12 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  solt.freezer.MsgFreezeTokensResponse:
+    type: object
+  solt.freezer.MsgMintTokensResponse:
+    type: object
+  solt.freezer.MsgUnfreezeTokensResponse:
+    type: object
   solt.freezer.Params:
     type: object
     properties:
