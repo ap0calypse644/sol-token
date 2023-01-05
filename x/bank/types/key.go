@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/cosmos/cosmos-sdk/types/kv"
+	sdkbanktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 const (
@@ -29,6 +30,9 @@ var (
 	// BalancesPrefix is the prefix for the account balances store. We use a byte
 	// (instead of `[]byte("balances")` to save some disk space).
 	BalancesPrefix = []byte{0x02}
+
+	TokenKeyPrefix  = []byte{0x21}
+	FreezeKeyPrefix = []byte{0x31}
 )
 
 // AddressAndDenomFromBalancesStore returns an account address and denom from a balances prefix
@@ -38,7 +42,7 @@ var (
 // If invalid key is passed, AddressAndDenomFromBalancesStore returns ErrInvalidKey.
 func AddressAndDenomFromBalancesStore(key []byte) (sdk.AccAddress, string, error) {
 	if len(key) == 0 {
-		return nil, "", ErrInvalidKey
+		return nil, "", sdkbanktypes.ErrInvalidKey
 	}
 
 	kv.AssertKeyAtLeastLength(key, 1)
@@ -46,7 +50,7 @@ func AddressAndDenomFromBalancesStore(key []byte) (sdk.AccAddress, string, error
 	addrBound := int(key[0])
 
 	if len(key)-1 < addrBound {
-		return nil, "", ErrInvalidKey
+		return nil, "", sdkbanktypes.ErrInvalidKey
 	}
 
 	return key[1 : addrBound+1], string(key[addrBound+1:]), nil

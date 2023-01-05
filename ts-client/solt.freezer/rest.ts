@@ -174,7 +174,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title solt/freezer/flist.proto
+ * @title solt/freezer/genesis.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {

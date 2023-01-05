@@ -49,3 +49,13 @@ func (k Keeper) SetFrozenAssets(ctx sdk.Context, owner sdk.AccAddress, frozenAss
 	b := k.cdc.MustMarshal(&frozenAssets)
 	store.Set(key, b)
 }
+
+// func (k Keeper) CheckFrozenTokens (ctx sdk.Context, owner sdk.AccAddress, balance sdk.Coins, sendAmount sdk.Coins) bool {
+// 	exists, frozenAssets := k.GetFrozenAssets(ctx, owner)
+// 	if !exists {
+// 		return true
+// 	}
+
+// 	frozenToken := sdk.NewCoins(frozenAssets.Amount...)
+// 	if balance.AmountOf(sendAmount[0].Denom)
+// }

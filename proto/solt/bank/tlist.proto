@@ -1,7 +1,7 @@
 syntax = "proto3";
-package solt.freezer;
+package solt.bank;
 
-option go_package = "solt/x/freezer/types";
+option go_package = "solt/x/bank/types";
 
 message Tlist {
   

@@ -14,7 +14,7 @@ func (k msgServer) MintTokens(goCtx context.Context, msg *types.MsgMintTokens) (
 
 	issuer, _ := sdk.AccAddressFromBech32(msg.Creator)
 
-	exists, tokenDetails := k.DenomAlreadyRegistered(ctx, msg.Amount[0].Denom)
+	exists, tokenDetails := k.bankKeeper.DenomAlreadyRegistered(ctx, msg.Amount[0].Denom)
 	if !exists {
 		err := k.bankKeeper.MintCoins(ctx, types.ModuleName, msg.Amount)
 		if err != nil {
@@ -26,17 +26,7 @@ func (k msgServer) MintTokens(goCtx context.Context, msg *types.MsgMintTokens) (
 			return nil, err
 		}
 
-		var token types.Tlist
-		token.Creator = msg.Creator
-		token.Denom = msg.Amount[0].Denom
-
-		store := ctx.KVStore(k.storeKey)
-
-		key := types.TokenKeyPrefix
-		key = append(key, []byte(token.Denom)...)
-		b := k.cdc.MustMarshal(&token)
-
-		store.Set(key, b)
+		k.bankKeeper.RegisterDenom(ctx, msg.Amount[0].Denom, msg.Creator)
 	} else {
 		if tokenDetails.Creator == msg.Creator {
 			err := k.bankKeeper.MintCoins(ctx, types.ModuleName, msg.Amount)

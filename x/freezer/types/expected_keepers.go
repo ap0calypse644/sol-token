@@ -1,6 +1,8 @@
 package types
 
 import (
+	solbanktypes "solt/x/bank/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -17,5 +19,9 @@ type BankKeeper interface {
 	MintCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
 	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
+	DenomAlreadyRegistered(ctx sdk.Context, denom string) (bool, solbanktypes.Tlist)
+	GetFrozenAssets(ctx sdk.Context, owner sdk.AccAddress) (bool, solbanktypes.Flist)
+	SetFrozenAssets(ctx sdk.Context, owner sdk.AccAddress, frozenAssets solbanktypes.Flist)
+	RegisterDenom(ctx sdk.Context, denom string, issuer string)
 	// Methods imported from bank should be defined here
 }

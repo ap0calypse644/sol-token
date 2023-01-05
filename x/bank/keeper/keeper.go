@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"unsafe"
 
+	solbanktypes "solt/x/bank/types"
+
 	"cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -44,6 +46,10 @@ type Keeper interface {
 	UndelegateCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	MintCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
 	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
+	DenomAlreadyRegistered(ctx sdk.Context, denom string) (bool, solbanktypes.Tlist)
+	GetFrozenAssets(ctx sdk.Context, owner sdk.AccAddress) (bool, solbanktypes.Flist)
+	SetFrozenAssets(ctx sdk.Context, owner sdk.AccAddress, frozenAssets solbanktypes.Flist)
+	RegisterDenom(ctx sdk.Context, denom string, issuer string)
 
 	DelegateCoins(ctx sdk.Context, delegatorAddr, moduleAccAddr sdk.AccAddress, amt sdk.Coins) error
 	UndelegateCoins(ctx sdk.Context, moduleAccAddr, delegatorAddr sdk.AccAddress, amt sdk.Coins) error
@@ -562,4 +568,62 @@ func UnsafeStrToBytes(s string) []byte {
 	bufHdr.Cap = sHdr.Len
 	bufHdr.Len = sHdr.Len
 	return buf
+}
+
+func (k BaseKeeper) DenomAlreadyRegistered(ctx sdk.Context, denom string) (bool, solbanktypes.Tlist) {
+	var token solbanktypes.Tlist
+
+	store := ctx.KVStore(k.storeKey)
+
+	key := solbanktypes.TokenKeyPrefix
+	key = append(key, []byte(denom)...)
+
+	if !store.Has(key) {
+		return false, token
+	}
+
+	b := store.Get(key)
+	k.cdc.MustUnmarshal(b, &token)
+
+	return true, token
+}
+
+func (k BaseKeeper) GetFrozenAssets(ctx sdk.Context, owner sdk.AccAddress) (bool, solbanktypes.Flist) {
+	var frozenAssets solbanktypes.Flist
+
+	store := ctx.KVStore(k.storeKey)
+	key := solbanktypes.FreezeKeyPrefix
+	key = append(key, owner.Bytes()...)
+
+	if !store.Has(key) {
+		return false, frozenAssets
+	}
+
+	b := store.Get(key)
+	k.cdc.MustUnmarshal(b, &frozenAssets)
+
+	return true, frozenAssets
+}
+
+func (k BaseKeeper) SetFrozenAssets(ctx sdk.Context, owner sdk.AccAddress, frozenAssets solbanktypes.Flist) {
+	store := ctx.KVStore(k.storeKey)
+	key := solbanktypes.FreezeKeyPrefix
+	key = append(key, owner.Bytes()...)
+
+	b := k.cdc.MustMarshal(&frozenAssets)
+	store.Set(key, b)
+}
+
+func (k BaseKeeper) RegisterDenom(ctx sdk.Context, denom string, issuer string) {
+	var token solbanktypes.Tlist
+	token.Creator = issuer
+	token.Denom = denom
+
+	store := ctx.KVStore(k.storeKey)
+
+	key := solbanktypes.TokenKeyPrefix
+	key = append(key, []byte(token.Denom)...)
+	b := k.cdc.MustMarshal(&token)
+
+	store.Set(key, b)
 }

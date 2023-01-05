@@ -6,6 +6,8 @@ import (
 
 	"solt/x/freezer/types"
 
+	solbanktypes "solt/x/bank/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -14,7 +16,7 @@ func (k msgServer) FreezeTokens(goCtx context.Context, msg *types.MsgFreezeToken
 
 	owner, _ := sdk.AccAddressFromBech32(msg.Owner)
 	denom := msg.Amount[0].Denom
-	var freezeList types.Flist
+	var freezeList solbanktypes.Flist
 
 	balance := k.bankKeeper.SpendableCoins(ctx, owner)
 	// Check if account has tokens to freeze
@@ -22,7 +24,7 @@ func (k msgServer) FreezeTokens(goCtx context.Context, msg *types.MsgFreezeToken
 		return nil, errors.New("account does not own token")
 	}
 
-	exists, frozenAssets := k.GetFrozenAssets(ctx, owner)
+	exists, frozenAssets := k.bankKeeper.GetFrozenAssets(ctx, owner)
 
 	// Check if acount has previously frozen assets
 	if !exists {
@@ -48,7 +50,7 @@ func (k msgServer) FreezeTokens(goCtx context.Context, msg *types.MsgFreezeToken
 	freezeList.Issuer = msg.Creator
 	freezeList.Owner = msg.Owner
 
-	k.SetFrozenAssets(ctx, owner, freezeList)
+	k.bankKeeper.SetFrozenAssets(ctx, owner, freezeList)
 
 	return &types.MsgFreezeTokensResponse{}, nil
 }

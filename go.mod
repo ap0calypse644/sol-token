@@ -5,7 +5,6 @@ go 1.18
 require (
 	cosmossdk.io/math v1.0.0-beta.4
 	github.com/armon/go-metrics v0.4.0
-	github.com/cosmos/cosmos-proto v1.0.0-beta.1
 	github.com/cosmos/cosmos-sdk v0.46.6
 	github.com/cosmos/ibc-go/v5 v5.1.0
 	github.com/gogo/protobuf v1.3.3
@@ -21,7 +20,6 @@ require (
 	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37
 	google.golang.org/grpc v1.51.0
 	gopkg.in/yaml.v2 v2.4.0
-	sigs.k8s.io/yaml v1.3.0
 )
 
 require (
@@ -60,6 +58,7 @@ require (
 	github.com/containerd/cgroups v1.0.3 // indirect
 	github.com/containerd/containerd v1.6.8 // indirect
 	github.com/cosmos/btcutil v1.0.4 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-beta.1 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
 	github.com/cosmos/iavl v0.19.4 // indirect
@@ -202,6 +201,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.4.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
+	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
 replace (
