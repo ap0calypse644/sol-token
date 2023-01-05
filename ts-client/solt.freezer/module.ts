@@ -7,21 +7,21 @@ import { msgTypes } from './registry';
 import { IgniteClient } from "../client"
 import { MissingWalletError } from "../helpers"
 import { Api } from "./rest";
-import { MsgMintTokens } from "./types/solt/freezer/tx";
 import { MsgUnfreezeTokens } from "./types/solt/freezer/tx";
+import { MsgMintTokens } from "./types/solt/freezer/tx";
 import { MsgFreezeTokens } from "./types/solt/freezer/tx";
 
 
-export { MsgMintTokens, MsgUnfreezeTokens, MsgFreezeTokens };
+export { MsgUnfreezeTokens, MsgMintTokens, MsgFreezeTokens };
 
-type sendMsgMintTokensParams = {
-  value: MsgMintTokens,
+type sendMsgUnfreezeTokensParams = {
+  value: MsgUnfreezeTokens,
   fee?: StdFee,
   memo?: string
 };
 
-type sendMsgUnfreezeTokensParams = {
-  value: MsgUnfreezeTokens,
+type sendMsgMintTokensParams = {
+  value: MsgMintTokens,
   fee?: StdFee,
   memo?: string
 };
@@ -33,12 +33,12 @@ type sendMsgFreezeTokensParams = {
 };
 
 
-type msgMintTokensParams = {
-  value: MsgMintTokens,
-};
-
 type msgUnfreezeTokensParams = {
   value: MsgUnfreezeTokens,
+};
+
+type msgMintTokensParams = {
+  value: MsgMintTokens,
 };
 
 type msgFreezeTokensParams = {
@@ -63,20 +63,6 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 
   return {
 		
-		async sendMsgMintTokens({ value, fee, memo }: sendMsgMintTokensParams): Promise<DeliverTxResponse> {
-			if (!signer) {
-					throw new Error('TxClient:sendMsgMintTokens: Unable to sign Tx. Signer is not present.')
-			}
-			try {			
-				const { address } = (await signer.getAccounts())[0]; 
-				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
-				let msg = this.msgMintTokens({ value: MsgMintTokens.fromPartial(value) })
-				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
-			} catch (e: any) {
-				throw new Error('TxClient:sendMsgMintTokens: Could not broadcast Tx: '+ e.message)
-			}
-		},
-		
 		async sendMsgUnfreezeTokens({ value, fee, memo }: sendMsgUnfreezeTokensParams): Promise<DeliverTxResponse> {
 			if (!signer) {
 					throw new Error('TxClient:sendMsgUnfreezeTokens: Unable to sign Tx. Signer is not present.')
@@ -88,6 +74,20 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
 			} catch (e: any) {
 				throw new Error('TxClient:sendMsgUnfreezeTokens: Could not broadcast Tx: '+ e.message)
+			}
+		},
+		
+		async sendMsgMintTokens({ value, fee, memo }: sendMsgMintTokensParams): Promise<DeliverTxResponse> {
+			if (!signer) {
+					throw new Error('TxClient:sendMsgMintTokens: Unable to sign Tx. Signer is not present.')
+			}
+			try {			
+				const { address } = (await signer.getAccounts())[0]; 
+				const signingClient = await SigningStargateClient.connectWithSigner(addr,signer,{registry, prefix});
+				let msg = this.msgMintTokens({ value: MsgMintTokens.fromPartial(value) })
+				return await signingClient.signAndBroadcast(address, [msg], fee ? fee : defaultFee, memo)
+			} catch (e: any) {
+				throw new Error('TxClient:sendMsgMintTokens: Could not broadcast Tx: '+ e.message)
 			}
 		},
 		
@@ -106,19 +106,19 @@ export const txClient = ({ signer, prefix, addr }: TxClientOptions = { addr: "ht
 		},
 		
 		
-		msgMintTokens({ value }: msgMintTokensParams): EncodeObject {
-			try {
-				return { typeUrl: "/solt.freezer.MsgMintTokens", value: MsgMintTokens.fromPartial( value ) }  
-			} catch (e: any) {
-				throw new Error('TxClient:MsgMintTokens: Could not create message: ' + e.message)
-			}
-		},
-		
 		msgUnfreezeTokens({ value }: msgUnfreezeTokensParams): EncodeObject {
 			try {
 				return { typeUrl: "/solt.freezer.MsgUnfreezeTokens", value: MsgUnfreezeTokens.fromPartial( value ) }  
 			} catch (e: any) {
 				throw new Error('TxClient:MsgUnfreezeTokens: Could not create message: ' + e.message)
+			}
+		},
+		
+		msgMintTokens({ value }: msgMintTokensParams): EncodeObject {
+			try {
+				return { typeUrl: "/solt.freezer.MsgMintTokens", value: MsgMintTokens.fromPartial( value ) }  
+			} catch (e: any) {
+				throw new Error('TxClient:MsgMintTokens: Could not create message: ' + e.message)
 			}
 		},
 		

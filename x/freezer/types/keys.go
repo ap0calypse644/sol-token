@@ -17,3 +17,9 @@ const (
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
+
+// keys
+var (
+	TokenKeyPrefix  = []byte{0x11}
+	FreezeKeyPrefix = []byte{0x21}
+)

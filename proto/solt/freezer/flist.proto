@@ -1,0 +1,13 @@
+syntax = "proto3";
+package solt.freezer;
+
+option go_package = "solt/x/freezer/types";
+import "gogoproto/gogo.proto"; 
+import "cosmos/base/v1beta1/coin.proto"; 
+
+message Flist {
+  
+  string owner = 1; 
+  repeated cosmos.base.v1beta1.Coin amount = 2 [(gogoproto.nullable) = false]; 
+  string issuer = 3; 
+}

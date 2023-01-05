@@ -1,9 +1,11 @@
 import { Client, registry, MissingWalletError } from 'solt-client-ts'
 
+import { Flist } from "solt-client-ts/solt.freezer/types"
 import { Params } from "solt-client-ts/solt.freezer/types"
+import { Tlist } from "solt-client-ts/solt.freezer/types"
 
 
-export { Params };
+export { Flist, Params, Tlist };
 
 function initClient(vuexGetters) {
 	return new Client(vuexGetters['common/env/getEnv'], vuexGetters['common/wallet/signer'])
@@ -37,7 +39,9 @@ const getDefaultState = () => {
 				Params: {},
 				
 				_Structure: {
+						Flist: getStructure(Flist.fromPartial({})),
 						Params: getStructure(Params.fromPartial({})),
+						Tlist: getStructure(Tlist.fromPartial({})),
 						
 		},
 		_Registry: registry,
@@ -141,19 +145,6 @@ export default {
 				}
 			}
 		},
-		async sendMsgUnfreezeTokens({ rootGetters }, { value, fee = [], memo = '' }) {
-			try {
-				const client=await initClient(rootGetters)
-				const result = await client.SoltFreezer.tx.sendMsgUnfreezeTokens({ value, fee: {amount: fee, gas: "200000"}, memo })
-				return result
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUnfreezeTokens:Init Could not initialize signing client. Wallet is required.')
-				}else{
-					throw new Error('TxClient:MsgUnfreezeTokens:Send Could not broadcast Tx: '+ e.message)
-				}
-			}
-		},
 		async sendMsgFreezeTokens({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const client=await initClient(rootGetters)
@@ -164,6 +155,19 @@ export default {
 					throw new Error('TxClient:MsgFreezeTokens:Init Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new Error('TxClient:MsgFreezeTokens:Send Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
+		async sendMsgUnfreezeTokens({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const client=await initClient(rootGetters)
+				const result = await client.SoltFreezer.tx.sendMsgUnfreezeTokens({ value, fee: {amount: fee, gas: "200000"}, memo })
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgUnfreezeTokens:Init Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new Error('TxClient:MsgUnfreezeTokens:Send Could not broadcast Tx: '+ e.message)
 				}
 			}
 		},
@@ -181,19 +185,6 @@ export default {
 				}
 			}
 		},
-		async MsgUnfreezeTokens({ rootGetters }, { value }) {
-			try {
-				const client=initClient(rootGetters)
-				const msg = await client.SoltFreezer.tx.msgUnfreezeTokens({value})
-				return msg
-			} catch (e) {
-				if (e == MissingWalletError) {
-					throw new Error('TxClient:MsgUnfreezeTokens:Init Could not initialize signing client. Wallet is required.')
-				} else{
-					throw new Error('TxClient:MsgUnfreezeTokens:Create Could not create message: ' + e.message)
-				}
-			}
-		},
 		async MsgFreezeTokens({ rootGetters }, { value }) {
 			try {
 				const client=initClient(rootGetters)
@@ -204,6 +195,19 @@ export default {
 					throw new Error('TxClient:MsgFreezeTokens:Init Could not initialize signing client. Wallet is required.')
 				} else{
 					throw new Error('TxClient:MsgFreezeTokens:Create Could not create message: ' + e.message)
+				}
+			}
+		},
+		async MsgUnfreezeTokens({ rootGetters }, { value }) {
+			try {
+				const client=initClient(rootGetters)
+				const msg = await client.SoltFreezer.tx.msgUnfreezeTokens({value})
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new Error('TxClient:MsgUnfreezeTokens:Init Could not initialize signing client. Wallet is required.')
+				} else{
+					throw new Error('TxClient:MsgUnfreezeTokens:Create Could not create message: ' + e.message)
 				}
 			}
 		},
