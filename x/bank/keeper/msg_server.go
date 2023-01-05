@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"errors"
 
 	"github.com/armon/go-metrics"
 
@@ -41,6 +42,17 @@ func (k msgServer) Send(goCtx context.Context, msg *types.MsgSend) (*types.MsgSe
 
 	if k.BlockedAddr(to) {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.ToAddress)
+	}
+
+	exists, frozenAssets := k.GetFrozenAssets(ctx, from)
+	denom := msg.Amount[0].Denom
+	if exists {
+		frozenTokens := sdk.NewCoins(frozenAssets.Amount...)
+		balance := k.SpendableCoins(ctx, from)
+		trueSpendable := balance.AmountOf(denom).Sub(frozenTokens.AmountOf(denom))
+		if msg.Amount[0].Amount.GT(trueSpendable) {
+			return nil, errors.New("tokens are frozen")
+		}
 	}
 
 	err = k.SendCoins(ctx, from, to, msg.Amount)
