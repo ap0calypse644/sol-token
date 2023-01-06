@@ -26,10 +26,21 @@ func (k msgServer) FreezeTokens(goCtx context.Context, msg *types.MsgFreezeToken
 
 	exists, frozenAssets := k.bankKeeper.GetFrozenAssets(ctx, owner)
 
+	registered, assetDetail := k.bankKeeper.DenomAlreadyRegistered(ctx, denom)
+
+	if !registered {
+		return nil, errors.New("token has not been registered")
+	}
+
 	// Check if acount has previously frozen assets
 	if !exists {
 		if balance.AmountOf(denom).LT(msg.Amount[0].Amount) {
 			return nil, errors.New("account does not have enough tokens to freeze")
+		}
+
+		// Check if issuer is trying to freeze tokens
+		if assetDetail.Creator != msg.Creator {
+			return nil, errors.New("only issuer is authorized to freeze tokens")
 		}
 	}
 
@@ -40,7 +51,7 @@ func (k msgServer) FreezeTokens(goCtx context.Context, msg *types.MsgFreezeToken
 	}
 
 	// Check if issuer is trying to freeze tokens
-	if frozenAssets.Issuer != msg.Creator {
+	if assetDetail.Creator != msg.Creator {
 		return nil, errors.New("only issuer is authorized to freeze tokens")
 	}
 
